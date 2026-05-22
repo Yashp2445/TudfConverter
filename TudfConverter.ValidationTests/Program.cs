@@ -473,7 +473,7 @@ class Program
             var e2eFileContent = File.ReadAllText(e2eResult.GeneratedFilePath!);
             var rawMemberId = e2eFileContent.Substring(6, 30);
             var trimmedMemberId = rawMemberId.Trim();
-            var hasRealMemberId = trimmedMemberId == "CU11880001";
+            var hasRealMemberId = trimmedMemberId == "CU11880001_DATASUBMISSION";
             var fileName = Path.GetFileName(e2eResult.GeneratedFilePath!);
             var startsWithRealId = fileName.StartsWith("CU11880001");
             Console.WriteLine($"DEBUG TEST 10: rawMemberId='{rawMemberId}', trimmedMemberId='{trimmedMemberId}', hasRealMemberId={hasRealMemberId}, fileName='{fileName}', startsWithRealId={startsWithRealId}");

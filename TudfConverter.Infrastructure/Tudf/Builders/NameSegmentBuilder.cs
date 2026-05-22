@@ -19,17 +19,40 @@ public class NameSegmentBuilder
         sb.Append("03");
         sb.Append("N01");
 
-        // Split FullName into tokens, take up to 5
-        var tokens = (name.FullName ?? string.Empty)
-            .Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)
-            .Take(5)
-            .ToArray();
+        // Split FullName into words
+        var words = (name.FullName ?? string.Empty)
+            .Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
-        for (int i = 0; i < tokens.Length; i++)
+        // Greedy word-packing: pack words (space-separated) into up to 5 tags, max 25 chars each
+        var packedTags = new System.Collections.Generic.List<string>();
+        int wordIndex = 0;
+        while (wordIndex < words.Length && packedTags.Count < 5)
+        {
+            var word = words[wordIndex].Length > 25 ? words[wordIndex].Substring(0, 25) : words[wordIndex];
+            var current = word;
+            wordIndex++;
+
+            while (wordIndex < words.Length)
+            {
+                var nextWord = words[wordIndex];
+                if (current.Length + 1 + nextWord.Length <= 25)
+                {
+                    current += " " + nextWord;
+                    wordIndex++;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            packedTags.Add(current);
+        }
+
+        for (int i = 0; i < packedTags.Count; i++)
         {
             var tag = (i + 1).ToString("D2"); // 01, 02, 03, 04, 05
-            var token = tokens[i].Length > 26 ? tokens[i].Substring(0, 26) : tokens[i];
-            sb.Append(TudfFieldFormatter.FormatVariableField(tag, token));
+            sb.Append(TudfFieldFormatter.FormatVariableField(tag, packedTags[i]));
         }
 
         // Tag 07: Date of Birth

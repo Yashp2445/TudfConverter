@@ -24,6 +24,8 @@ namespace TudfConverter.Application.Mapping
         public const string UniversalIdNumber = "Universal ID Number";
         public const string AdditionalId1 = "Additional ID #1";
         public const string AdditionalId2 = "Additional ID #2";
+        public const string Ckyc = "CKYC";
+        public const string NregaCardNumber = "NREGA Card Number";
         #endregion
 
         #region Telephone
@@ -105,7 +107,7 @@ namespace TudfConverter.Application.Mapping
                 ConsumerName, DateOfBirth, Gender,
                 IncomeTaxIdNumber, PassportNumber, PassportIssueDate, PassportExpiryDate,
                 VoterIdNumber, DrivingLicenseNumber, DrivingLicenseIssueDate, DrivingLicenseExpiryDate,
-                RationCardNumber, UniversalIdNumber, AdditionalId1, AdditionalId2,
+                RationCardNumber, UniversalIdNumber, AdditionalId1, AdditionalId2, Ckyc, NregaCardNumber,
                 TelephoneNoMobile, TelephoneNoResidence, TelephoneNoOffice, ExtensionOffice,
                 TelephoneNoOther, ExtensionOther,
                 EmailId1, EmailId2,

@@ -87,6 +87,11 @@ public class FileProcessingService : IFileProcessingService
 
             // Stage 4 — Build header model
             var memberId = readResult.HeaderData.TryGetValue("Reporting Member ID", out var mid) && !string.IsNullOrEmpty(mid) ? mid : options.MemberUserId;
+            
+            // Append _DATASUBMISSION suffix to match production TUDF format
+            if (!memberId.EndsWith("_DATASUBMISSION", StringComparison.OrdinalIgnoreCase))
+                memberId += "_DATASUBMISSION";
+
             var shortName = readResult.HeaderData.TryGetValue("Short Name", out var sname) ? sname : options.MemberShortName;
             var cycle = readResult.HeaderData.TryGetValue("Cycle Identification", out var cyc) && !string.IsNullOrEmpty(cyc) ? cyc : options.ReportingCycle;
             

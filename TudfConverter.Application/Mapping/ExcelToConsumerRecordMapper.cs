@@ -230,7 +230,20 @@ namespace TudfConverter.Application.Mapping
             AddId(ExcelColumnMap.DrivingLicenseNumber, 4, ExcelColumnMap.DrivingLicenseIssueDate, ExcelColumnMap.DrivingLicenseExpiryDate);
             AddId(ExcelColumnMap.RationCardNumber, 5);
             AddId(ExcelColumnMap.UniversalIdNumber, 6);
-            AddId(ExcelColumnMap.AdditionalId1, 9);
+
+            // Type 9 (Additional ID #1): Check CKYC column first, fall back to AdditionalId1
+            var ckycVal = GetValue(row, ExcelColumnMap.Ckyc);
+            if (!string.IsNullOrWhiteSpace(ckycVal))
+                AddId(ExcelColumnMap.Ckyc, 9);
+            else
+                AddId(ExcelColumnMap.AdditionalId1, 9);
+
+            // Type 10 (Additional ID #2): Check NREGA column first, fall back to AdditionalId2
+            var nregaVal = GetValue(row, ExcelColumnMap.NregaCardNumber);
+            if (!string.IsNullOrWhiteSpace(nregaVal))
+                AddId(ExcelColumnMap.NregaCardNumber, 10);
+            else
+                AddId(ExcelColumnMap.AdditionalId2, 10);
 
             return ids;
         }
