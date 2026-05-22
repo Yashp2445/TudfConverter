@@ -62,6 +62,7 @@ namespace TudfConverter.Application.Mapping
         public const string DateOpenedDisbursed = "Date Opened/Disbursed";
         public const string DateOfLastPayment = "Date of Last Payment";
         public const string DateClosed = "Date Closed";
+        public const string DateReportedAndCertified = "Date Reported";
         public const string HighCreditSanctionedAmt = "High Credit/Sanctioned Amt";
         public const string CurrentBalance = "Current  Balance";
         public const string AmtOverdue = "Amt Overdue";
@@ -112,7 +113,7 @@ namespace TudfConverter.Application.Mapping
                 AddressLine2, StateCode2, PinCode2, AddressCategory2, ResidenceCode2,
                 CurrentNewMemberCode, CurrentNewMemberShortName, CurrNewAccountNo, AccountType,
                 OwnershipIndicator, DateOpenedDisbursed, DateOfLastPayment, DateClosed,
-                HighCreditSanctionedAmt, CurrentBalance, AmtOverdue, NoOfDaysPastDue,
+                DateReportedAndCertified, HighCreditSanctionedAmt, CurrentBalance, AmtOverdue, NoOfDaysPastDue,
                 OldMbrCode, OldMbrShortName, OldAccNo, OldAccType, OldOwnershipIndicator,
                 SuitFiledWilfulDefault, AssetClassification, ValueOfCollateral, TypeOfCollateral,
                 CreditLimit, CashLimit, RateOfInterest, RepaymentTenure, EmiAmount,

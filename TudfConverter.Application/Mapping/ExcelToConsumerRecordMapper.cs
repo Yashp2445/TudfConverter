@@ -93,6 +93,8 @@ namespace TudfConverter.Application.Mapping
             int.TryParse(GetValue(row, ExcelColumnMap.AccountType), out int accType);
             int.TryParse(GetValue(row, ExcelColumnMap.OwnershipIndicator), out int ownInd);
 
+            TryParseDate(GetValue(row, ExcelColumnMap.DateReportedAndCertified), out var dateReported);
+
             var model = new AccountSegmentModel
             {
                 CurrentMemberCode = GetValue(row, ExcelColumnMap.CurrentNewMemberCode) ?? string.Empty,
@@ -104,8 +106,7 @@ namespace TudfConverter.Application.Mapping
                 HighCreditSanctionedAmount = highCredit,
                 CurrentBalance = currentBalance,
                 IsCurrentBalanceNegative = isNegative,
-                // We default DateReportedAndCertified here but it can be overwritten later
-                DateReportedAndCertified = default
+                DateReportedAndCertified = dateReported
             };
 
             if (TryParseDate(GetValue(row, ExcelColumnMap.DateOfLastPayment), out var dateLastPay))
@@ -229,8 +230,7 @@ namespace TudfConverter.Application.Mapping
             AddId(ExcelColumnMap.DrivingLicenseNumber, 4, ExcelColumnMap.DrivingLicenseIssueDate, ExcelColumnMap.DrivingLicenseExpiryDate);
             AddId(ExcelColumnMap.RationCardNumber, 5);
             AddId(ExcelColumnMap.UniversalIdNumber, 6);
-            AddId(ExcelColumnMap.AdditionalId1, 7);
-            AddId(ExcelColumnMap.AdditionalId2, 8);
+            AddId(ExcelColumnMap.AdditionalId1, 9);
 
             return ids;
         }

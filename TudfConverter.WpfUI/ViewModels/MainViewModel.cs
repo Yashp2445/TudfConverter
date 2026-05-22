@@ -49,8 +49,6 @@ public partial class MainViewModel : ObservableObject
         _validationResultsView = validationResultsView;
         _historyView = historyView;
 
-        MemberUserId = _settings.MemberUserId;
-
         _processFileView.DataContext = this;
         _validationResultsView.DataContext = this;
         _historyView.DataContext = this;
@@ -73,14 +71,7 @@ public partial class MainViewModel : ObservableObject
     [NotifyCanExecuteChangedFor(nameof(ProcessFileCommand))]
     private string _selectedFilePath = string.Empty;
 
-    [ObservableProperty]
-    private DateOnly _reportDate = DateOnly.FromDateTime(DateTime.Today);
 
-    [ObservableProperty]
-    private string _selectedReportingCycle = "W1";
-
-    [ObservableProperty]
-    private string _memberUserId = string.Empty;
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(ProcessFileCommand))]
@@ -195,10 +186,10 @@ public partial class MainViewModel : ObservableObject
         {
             var options = new ProcessingOptions
             {
-                MemberUserId = MemberUserId,
+                MemberUserId = _settings.MemberUserId ?? string.Empty,
                 MemberShortName = _settings.MemberShortName,
-                DateReportedAndCertified = ReportDate,
-                ReportingCycle = SelectedReportingCycle,
+                DateReportedAndCertified = default,
+                ReportingCycle = string.Empty,
                 OutputFolder = _settings.OutputFolder ?? "Output",
                 ReportFolder = _settings.ReportFolder ?? "Reports"
             };

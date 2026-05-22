@@ -9,73 +9,28 @@
     
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="32">
-            <!-- Section 2: Two-column card layout -->
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="20"/>
-                    <ColumnDefinition Width="360"/>
-                </Grid.ColumnDefinitions>
+            <!-- File Selection Card -->
+            <Border Style="{StaticResource CardStyle}">
+                <StackPanel>
+                    <TextBlock Text="Upload Excel File" Style="{StaticResource H3}" Margin="0,0,0,4"/>
+                    <TextBlock Text="Select the UCRF-formatted Excel submission template." Foreground="{StaticResource TextSecondary}" Margin="0,0,0,20"/>
+                    
+                    <!-- Drop Zone Visual -->
+                    <Border Height="120" CornerRadius="8" BorderBrush="{StaticResource BorderMedium}" BorderThickness="1.5" Background="{StaticResource AppBackground}" Margin="0,0,0,20">
 
-                <!-- Left Card: File Selection -->
-                <Border Grid.Column="0" Style="{StaticResource CardStyle}">
-                    <StackPanel>
-                        <TextBlock Text="Upload Excel File" Style="{StaticResource H3}" Margin="0,0,0,4"/>
-                        <TextBlock Text="Select the UCRF-formatted Excel submission template." Foreground="{StaticResource TextSecondary}" Margin="0,0,0,20"/>
-                        
-                        <!-- Drop Zone Visual -->
-                        <Border Height="120" CornerRadius="8" BorderBrush="{StaticResource BorderMedium}" BorderThickness="1.5" Background="{StaticResource AppBackground}" Margin="0,0,0,20">
-
-                            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                                <TextBlock Text="📁" FontSize="32" Foreground="{StaticResource TextMuted}" HorizontalAlignment="Center" Margin="0,0,0,8"/>
-                                <TextBlock Text="Click Browse or drag and drop your file" Foreground="{StaticResource TextSecondary}" FontSize="13" HorizontalAlignment="Center"/>
-                                <TextBlock Text="Supported format: .xlsx" Foreground="{StaticResource TextMuted}" FontSize="11" HorizontalAlignment="Center"/>
-                            </StackPanel>
-                        </Border>
-
-                        <StackPanel Orientation="Horizontal">
-                            <TextBox Text="{Binding SelectedFilePath, Mode=OneWay}" IsReadOnly="True" Style="{StaticResource InputStyle}" Width="350" Margin="0,0,12,0"/>
-                            <Button Content="Browse" Command="{Binding BrowseFileCommand}" Style="{StaticResource SecondaryButtonStyle}" Width="90"/>
+                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <TextBlock Text="📁" FontSize="32" Foreground="{StaticResource TextMuted}" HorizontalAlignment="Center" Margin="0,0,0,8"/>
+                            <TextBlock Text="Click Browse or drag and drop your file" Foreground="{StaticResource TextSecondary}" FontSize="13" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Supported format: .xlsx" Foreground="{StaticResource TextMuted}" FontSize="11" HorizontalAlignment="Center"/>
                         </StackPanel>
+                    </Border>
+
+                    <StackPanel Orientation="Horizontal">
+                        <TextBox Text="{Binding SelectedFilePath, Mode=OneWay}" IsReadOnly="True" Style="{StaticResource InputStyle}" Width="350" Margin="0,0,12,0"/>
+                        <Button Content="Browse" Command="{Binding BrowseFileCommand}" Style="{StaticResource SecondaryButtonStyle}" Width="90"/>
                     </StackPanel>
-                </Border>
-
-                <!-- Right Card: Submission Configuration -->
-                <Border Grid.Column="2" Style="{StaticResource CardStyle}">
-                    <StackPanel>
-                        <TextBlock Text="Submission Settings" Style="{StaticResource H3}" Margin="0,0,0,20"/>
-
-                        <Grid Margin="0,0,0,16">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                            </Grid.RowDefinitions>
-
-                            <TextBlock Grid.Row="0" Text="Report Date" Style="{StaticResource LabelStyle}" Margin="0,0,0,4"/>
-                            <DatePicker Grid.Row="1" SelectedDate="{Binding ReportDate}" Height="38" Margin="0,0,0,16" Background="{StaticResource AppWhite}" Foreground="{StaticResource TextPrimary}"/>
-
-                            <TextBlock Grid.Row="2" Text="Reporting Cycle" Style="{StaticResource LabelStyle}" Margin="0,0,0,4"/>
-                            <ComboBox Grid.Row="3" SelectedItem="{Binding SelectedReportingCycle}" Style="{StaticResource ComboBoxStyle}" Margin="0,0,0,16">
-                                <ComboBoxItem Content="DL - Daily Incremental" Tag="DL"/>
-                                <ComboBoxItem Content="W1 - Weekly (9th of month)" Tag="W1"/>
-                                <ComboBoxItem Content="W2 - Weekly (16th of month)" Tag="W2"/>
-                                <ComboBoxItem Content="W3 - Weekly (23rd of month)" Tag="W3"/>
-                                <ComboBoxItem Content="ME - Month End Full Submission" Tag="ME"/>
-                                <ComboBoxItem Content="DC - Data Correction or Dispute" Tag="DC"/>
-                                <ComboBoxItem Content="AH - Adhoc Submission" Tag="AH"/>
-                                <ComboBoxItem Content="RR - Rejection Resubmission" Tag="RR"/>
-                            </ComboBox>
-
-                            <TextBlock Grid.Row="4" Text="Member ID" Style="{StaticResource LabelStyle}" Margin="0,0,0,4"/>
-                            <TextBox Grid.Row="5" Text="{Binding MemberUserId, Mode=OneWay}" IsReadOnly="True" Style="{StaticResource InputStyle}" Background="{StaticResource AppBackground}"/>
-                        </Grid>
-                    </StackPanel>
-                </Border>
-            </Grid>
+                </StackPanel>
+            </Border>
 
             <!-- Process File Button -->
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,24,0,24">

@@ -12,8 +12,10 @@ public class EmailSegmentBuilder
     {
         var sb = new StringBuilder();
 
-        // Segment tag: C + index zero-padded to 2 digits
+        // Segment tag: EC + 03 + C + index zero-padded to 2 digits
         var segTag = "C" + email.SegmentIndex.ToString("D2");
+        sb.Append("EC");
+        sb.Append("03");
         sb.Append(segTag);
 
         // Tag 01: EmailId as variable field

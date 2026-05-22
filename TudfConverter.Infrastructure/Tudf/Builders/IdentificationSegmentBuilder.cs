@@ -12,8 +12,10 @@ public class IdentificationSegmentBuilder
     {
         var sb = new StringBuilder();
 
-        // Segment tag: I + index zero-padded to 2 digits
+        // Segment tag: ID + 03 + I + index zero-padded to 2 digits
         var segTag = "I" + id.SegmentIndex.ToString("D2");
+        sb.Append("ID");
+        sb.Append("03");
         sb.Append(segTag);
 
         // Tag 01: IdType as fixed 2-byte numeric

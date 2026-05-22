@@ -13,8 +13,10 @@ public class AccountHistorySegmentBuilder
     {
         var sb = new StringBuilder();
 
-        // Segment tag: H + index zero-padded to 2 digits
+        // Segment tag: TH + 03 + H + index zero-padded to 2 digits
         var segTag = "H" + history.SegmentIndex.ToString("D2");
+        sb.Append("TH");
+        sb.Append("03");
         sb.Append(segTag);
 
         // Tag 01: AccountHistoryDate as fixed 8-byte date

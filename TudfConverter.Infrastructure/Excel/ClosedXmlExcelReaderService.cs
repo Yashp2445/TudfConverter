@@ -51,6 +51,23 @@ namespace TudfConverter.Infrastructure.Excel
                         headerRow = row;
                         break;
                     }
+
+                    // While scanning for the header row, also capture any 2-column key-value pairs (like "Reporting Member ID")
+                    var cellsUsed = row.CellsUsed().ToList();
+                    if (cellsUsed.Count >= 2)
+                    {
+                        var key = cellsUsed[0].Value.ToString().Trim();
+                        var val = cellsUsed[1].Value.ToString().Trim();
+                        if (!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(val))
+                        {
+                            // If Date Reported is stored as DateTime, format it
+                            if (cellsUsed[1].DataType == XLDataType.DateTime && cellsUsed[1].Value.IsDateTime)
+                            {
+                                val = cellsUsed[1].Value.GetDateTime().ToString("ddMMyyyy");
+                            }
+                            result.HeaderData[key] = val;
+                        }
+                    }
                 }
 
                 if (headerRow == null)

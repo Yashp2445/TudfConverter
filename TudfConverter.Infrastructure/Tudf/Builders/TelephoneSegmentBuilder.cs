@@ -12,8 +12,10 @@ public class TelephoneSegmentBuilder
     {
         var sb = new StringBuilder();
 
-        // Segment tag: T + index zero-padded to 2 digits
+        // Segment tag: PT + 03 + T + index zero-padded to 2 digits
         var segTag = "T" + phone.SegmentIndex.ToString("D2");
+        sb.Append("PT");
+        sb.Append("03");
         sb.Append(segTag);
 
         // Tag 01: TelephoneNumber as variable field

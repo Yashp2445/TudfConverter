@@ -14,8 +14,9 @@ public class NameSegmentBuilder
     {
         var sb = new StringBuilder();
 
-        // Segment identifier: PN + segment tag N01
+        // Segment identifier: PN + 03 + segment tag N01
         sb.Append("PN");
+        sb.Append("03");
         sb.Append("N01");
 
         // Split FullName into tokens, take up to 5

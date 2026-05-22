@@ -83,27 +83,31 @@ public class FileProcessingService : IFileProcessingService
             _logger.LogInformation("Mapped {Count} records from Excel.", records.Count);
 
             // Stage 4 — Build header model
-            var headerDate = options.DateReportedAndCertified == default 
+            var memberId = readResult.HeaderData.TryGetValue("Reporting Member ID", out var mid) && !string.IsNullOrEmpty(mid) ? mid : options.MemberUserId;
+            var shortName = readResult.HeaderData.TryGetValue("Short Name", out var sname) ? sname : options.MemberShortName;
+            var cycle = readResult.HeaderData.TryGetValue("Cycle Identification", out var cyc) && !string.IsNullOrEmpty(cyc) ? cyc : options.ReportingCycle;
+            
+            DateOnly headerDate = options.DateReportedAndCertified == default 
                 ? DateOnly.FromDateTime(DateTime.Today) 
                 : options.DateReportedAndCertified;
+
+            if (readResult.HeaderData.TryGetValue("Date Reported", out var drStr) && !string.IsNullOrEmpty(drStr))
+            {
+                if (DateOnly.TryParseExact(drStr, "ddMMyyyy", null, System.Globalization.DateTimeStyles.None, out var d1)) headerDate = d1;
+                else if (DateOnly.TryParseExact(drStr, "dd/MM/yyyy", null, System.Globalization.DateTimeStyles.None, out var d2)) headerDate = d2;
+                else if (DateOnly.TryParseExact(drStr, "dd-MM-yyyy", null, System.Globalization.DateTimeStyles.None, out var d3)) headerDate = d3;
+            }
                 
             var header = new HeaderSegmentModel
             {
-                MemberUserId = options.MemberUserId,
-                ShortName = options.MemberShortName,
-                ReportingCycle = options.ReportingCycle,
+                MemberUserId = memberId,
+                ShortName = shortName,
+                ReportingCycle = cycle,
                 DateReportedAndCertified = headerDate,
                 MemberData = string.Empty
             };
 
             // Stage 5 — Validate all records
-            foreach (var record in records)
-            {
-                if (record.Account != null)
-                {
-                    record.Account.DateReportedAndCertified = headerDate;
-                }
-            }
 
             progress?.Report(new ProcessingProgress { Message = "Validating records against UCRF rules...", Percentage = 25, ProcessedRows = 0, TotalRows = records.Count });
             var validationProgress = new Progress<ProcessingProgress>(p => 

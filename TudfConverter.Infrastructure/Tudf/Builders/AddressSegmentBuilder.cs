@@ -13,8 +13,10 @@ public class AddressSegmentBuilder
     {
         var sb = new StringBuilder();
 
-        // Segment tag: A + index zero-padded to 2 digits
+        // Segment tag: PA + 03 + A + index zero-padded to 2 digits
         var segTag = "A" + address.SegmentIndex.ToString("D2");
+        sb.Append("PA");
+        sb.Append("03");
         sb.Append(segTag);
 
         // Tag 01: AddressLine1

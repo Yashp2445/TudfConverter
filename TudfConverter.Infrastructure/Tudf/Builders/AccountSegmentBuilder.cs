@@ -16,8 +16,9 @@ public class AccountSegmentBuilder
     {
         var sb = new StringBuilder();
 
-        // Segment identifier: TL + fixed 4-byte tag T001
+        // Segment identifier: TL + 04 + fixed 4-byte tag T001
         sb.Append("TL");
+        sb.Append("04");
         sb.Append("T001");
 
         // Tag 01: CurrentMemberCode - padded to 10 chars, as variable field
