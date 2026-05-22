@@ -440,5 +440,44 @@ class Program
         bool membersMatch = expMemberId == actMemberId;
         Console.WriteLine($"Test 5 - Compare output structure: {(countsMatch && membersMatch ? "PASS" : "FAIL")} (ES02 Count: {actualEs02Count} vs Expected: {expectedEs02Count}, Member Match: {membersMatch})");
 
+        // Test 6 - Full End-to-End Pipeline Service execution (matching WPF flow)
+        Console.WriteLine("\n--- Full End-to-End Service Test ---");
+        Console.WriteLine("Parsed Header Data keys and values:");
+        foreach (var kvp in readResult.HeaderData)
+        {
+            Console.WriteLine($"  [{kvp.Key}] = '{kvp.Value}'");
+        }
+        var runOptions = new ProcessingOptions 
+        { 
+            OutputFolder = "Output/GeneratedFiles", 
+            MemberUserId = "BNK1234567",
+            MemberShortName = "BANK ABC",
+            ReportFolder = "Output/ValidationReports",
+            ReportingCycle = "W1",
+            DateReportedAndCertified = default
+        };
+        var e2eResult = await pipelineService!.ProcessFileAsync(excelFile, runOptions);
+        
+        bool e2eSuccess = e2eResult.IsSuccess;
+        bool e2eCountMatch = e2eResult.AcceptedRows == 28882 && e2eResult.RejectedRows == 0;
+        bool e2eFileGenerated = !string.IsNullOrEmpty(e2eResult.GeneratedFilePath) && File.Exists(e2eResult.GeneratedFilePath);
+        bool e2eReportGenerated = !string.IsNullOrEmpty(e2eResult.ReportFilePath) && File.Exists(e2eResult.ReportFilePath);
+        
+        Console.WriteLine($"Test 6 - Pipeline run success: {(e2eSuccess ? "PASS" : "FAIL")}");
+        Console.WriteLine($"Test 7 - Pipeline count check: {(e2eCountMatch ? "PASS" : "FAIL")} (Accepted: {e2eResult.AcceptedRows}, Rejected: {e2eResult.RejectedRows})");
+        Console.WriteLine($"Test 8 - Pipeline output path resolved & exists: {(e2eFileGenerated ? "PASS" : "FAIL")} (Path: {e2eResult.GeneratedFilePath})");
+        Console.WriteLine($"Test 9 - Pipeline report path resolved & exists: {(e2eReportGenerated ? "PASS" : "FAIL")} (Path: {e2eResult.ReportFilePath})");
+        
+        if (e2eFileGenerated)
+        {
+            var e2eFileContent = File.ReadAllText(e2eResult.GeneratedFilePath!);
+            var rawMemberId = e2eFileContent.Substring(6, 30);
+            var trimmedMemberId = rawMemberId.Trim();
+            var hasRealMemberId = trimmedMemberId == "CU11880001";
+            var fileName = Path.GetFileName(e2eResult.GeneratedFilePath!);
+            var startsWithRealId = fileName.StartsWith("CU11880001");
+            Console.WriteLine($"DEBUG TEST 10: rawMemberId='{rawMemberId}', trimmedMemberId='{trimmedMemberId}', hasRealMemberId={hasRealMemberId}, fileName='{fileName}', startsWithRealId={startsWithRealId}");
+            Console.WriteLine($"Test 10 - Filename and content use parsed Member ID: {((hasRealMemberId && startsWithRealId) ? "PASS" : "FAIL")}");
+        }
     }
 }

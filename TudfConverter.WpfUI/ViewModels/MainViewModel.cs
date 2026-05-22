@@ -87,6 +87,12 @@ public partial class MainViewModel : ObservableObject
     private bool _hasResult = false;
 
     [ObservableProperty]
+    private bool _isProcessSuccess = false;
+
+    [ObservableProperty]
+    private string? _errorMessage;
+
+    [ObservableProperty]
     private int _totalRows;
 
     [ObservableProperty]
@@ -202,6 +208,8 @@ public partial class MainViewModel : ObservableObject
 
             var result = await _processingService.ProcessFileAsync(SelectedFilePath, options, progress, CancellationToken.None);
 
+            IsProcessSuccess = result.IsSuccess;
+            ErrorMessage = result.ErrorMessage;
             HasResult = true;
             TotalRows = result.TotalRows;
             AcceptedRows = result.AcceptedRows;
@@ -237,6 +245,9 @@ public partial class MainViewModel : ObservableObject
         catch (Exception ex)
         {
             StatusMessage = $"Error: {ex.Message}";
+            IsProcessSuccess = false;
+            ErrorMessage = ex.Message;
+            HasResult = true;
         }
         finally
         {

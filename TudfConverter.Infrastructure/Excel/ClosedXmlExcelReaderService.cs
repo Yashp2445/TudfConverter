@@ -31,10 +31,25 @@ namespace TudfConverter.Infrastructure.Excel
                 using var workbook = new XLWorkbook(fileStream);
                 var worksheet = workbook.Worksheet(1);
                 IXLRow? headerRow = null;
+                var knownHeaderKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+                {
+                    "Reporting Member ID", "Member User ID", "Member ID", "MemberUserId",
+                    "Short Name", "Member Short Name", "ShortName",
+                    "Cycle Identification", "Reporting Cycle", "Cycle",
+                    "Date Reported", "Date Reported and Certified", "DateReported"
+                };
+                int skipNextRowsCount = 0;
                 
                 // Scan the first 50 rows to find the header row containing "Consumer Name" or "Current/New Member Code"
-                foreach (var row in worksheet.Rows(1, 50))
+                for (int r = 1; r <= 50; r++)
                 {
+                    if (skipNextRowsCount > 0)
+                    {
+                        skipNextRowsCount--;
+                        continue;
+                    }
+
+                    var row = worksheet.Row(r);
                     bool found = false;
                     foreach (var cell in row.CellsUsed())
                     {
@@ -52,20 +67,69 @@ namespace TudfConverter.Infrastructure.Excel
                         break;
                     }
 
-                    // While scanning for the header row, also capture any 2-column key-value pairs (like "Reporting Member ID")
-                    var cellsUsed = row.CellsUsed().ToList();
-                    if (cellsUsed.Count >= 2)
+                    // Look for cells in this row that match known header keys
+                    var matchedCells = new List<(IXLCell cell, string matchedKey)>();
+                    foreach (var cell in row.CellsUsed())
                     {
-                        var key = cellsUsed[0].Value.ToString().Trim();
-                        var val = cellsUsed[1].Value.ToString().Trim();
-                        if (!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(val))
+                        var text = cell.Value.ToString().Trim();
+                        if (knownHeaderKeys.Contains(text))
                         {
-                            // If Date Reported is stored as DateTime, format it
-                            if (cellsUsed[1].DataType == XLDataType.DateTime && cellsUsed[1].Value.IsDateTime)
+                            matchedCells.Add((cell, text));
+                        }
+                    }
+
+                    if (matchedCells.Count >= 2)
+                    {
+                        // Treat as Horizontal Header Row: headers are in row `r`, values in row `r + 1`
+                        var nextRow = worksheet.Row(r + 1);
+                        foreach (var (headerCell, key) in matchedCells)
+                        {
+                            int colNum = headerCell.Address.ColumnNumber;
+                            var valCell = nextRow.Cell(colNum);
+                            var val = valCell.Value.ToString().Trim();
+                            if (valCell.DataType == XLDataType.DateTime && valCell.Value.IsDateTime)
                             {
-                                val = cellsUsed[1].Value.GetDateTime().ToString("ddMMyyyy");
+                                val = valCell.Value.GetDateTime().ToString("ddMMyyyy");
                             }
+                            if (!string.IsNullOrEmpty(val))
+                            {
+                                result.HeaderData[key] = val;
+                            }
+                        }
+                        skipNextRowsCount = 1; // skip row r+1 since we consumed it as values
+                    }
+                    else if (matchedCells.Count == 1)
+                    {
+                        // Treat as Vertical Key-Value: header cell contains key, next cell (same row) contains value
+                        var (keyCell, key) = matchedCells[0];
+                        int colNum = keyCell.Address.ColumnNumber;
+                        var valCell = row.Cell(colNum + 1);
+                        var val = valCell.Value.ToString().Trim();
+                        if (valCell.DataType == XLDataType.DateTime && valCell.Value.IsDateTime)
+                        {
+                            val = valCell.Value.GetDateTime().ToString("ddMMyyyy");
+                        }
+                        if (!string.IsNullOrEmpty(val))
+                        {
                             result.HeaderData[key] = val;
+                        }
+                    }
+                    else
+                    {
+                        // Fallback: If no known keys matched, keep the old generic 2-column key-value pair extraction
+                        var cellsUsed = row.CellsUsed().ToList();
+                        if (cellsUsed.Count >= 2)
+                        {
+                            var key = cellsUsed[0].Value.ToString().Trim();
+                            var val = cellsUsed[1].Value.ToString().Trim();
+                            if (!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(val))
+                            {
+                                if (cellsUsed[1].DataType == XLDataType.DateTime && cellsUsed[1].Value.IsDateTime)
+                                {
+                                    val = cellsUsed[1].Value.GetDateTime().ToString("ddMMyyyy");
+                                }
+                                result.HeaderData[key] = val;
+                            }
                         }
                     }
                 }
