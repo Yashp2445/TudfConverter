@@ -1,0 +1,248 @@
+<UserControl x:Class="TudfConverter.WpfUI.Views.ProcessFileView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="700" d:DesignWidth="900"
+             Background="{StaticResource AppBackground}">
+    
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="32">
+            <!-- Section 2: Two-column card layout -->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="20"/>
+                    <ColumnDefinition Width="360"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Left Card: File Selection -->
+                <Border Grid.Column="0" Style="{StaticResource CardStyle}">
+                    <StackPanel>
+                        <TextBlock Text="Upload Excel File" Style="{StaticResource H3}" Margin="0,0,0,4"/>
+                        <TextBlock Text="Select the UCRF-formatted Excel submission template." Foreground="{StaticResource TextSecondary}" Margin="0,0,0,20"/>
+                        
+                        <!-- Drop Zone Visual -->
+                        <Border Height="120" CornerRadius="8" BorderBrush="{StaticResource BorderMedium}" BorderThickness="1.5" Background="{StaticResource AppBackground}" Margin="0,0,0,20">
+
+                            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <TextBlock Text="📁" FontSize="32" Foreground="{StaticResource TextMuted}" HorizontalAlignment="Center" Margin="0,0,0,8"/>
+                                <TextBlock Text="Click Browse or drag and drop your file" Foreground="{StaticResource TextSecondary}" FontSize="13" HorizontalAlignment="Center"/>
+                                <TextBlock Text="Supported format: .xlsx" Foreground="{StaticResource TextMuted}" FontSize="11" HorizontalAlignment="Center"/>
+                            </StackPanel>
+                        </Border>
+
+                        <StackPanel Orientation="Horizontal">
+                            <TextBox Text="{Binding SelectedFilePath, Mode=OneWay}" IsReadOnly="True" Style="{StaticResource InputStyle}" Width="350" Margin="0,0,12,0"/>
+                            <Button Content="Browse" Command="{Binding BrowseFileCommand}" Style="{StaticResource SecondaryButtonStyle}" Width="90"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- Right Card: Submission Configuration -->
+                <Border Grid.Column="2" Style="{StaticResource CardStyle}">
+                    <StackPanel>
+                        <TextBlock Text="Submission Settings" Style="{StaticResource H3}" Margin="0,0,0,20"/>
+
+                        <Grid Margin="0,0,0,16">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Row="0" Text="Report Date" Style="{StaticResource LabelStyle}" Margin="0,0,0,4"/>
+                            <DatePicker Grid.Row="1" SelectedDate="{Binding ReportDate}" Height="38" Margin="0,0,0,16" Background="{StaticResource AppWhite}" Foreground="{StaticResource TextPrimary}"/>
+
+                            <TextBlock Grid.Row="2" Text="Reporting Cycle" Style="{StaticResource LabelStyle}" Margin="0,0,0,4"/>
+                            <ComboBox Grid.Row="3" SelectedItem="{Binding SelectedReportingCycle}" Style="{StaticResource ComboBoxStyle}" Margin="0,0,0,16">
+                                <ComboBoxItem Content="DL - Daily Incremental" Tag="DL"/>
+                                <ComboBoxItem Content="W1 - Weekly (9th of month)" Tag="W1"/>
+                                <ComboBoxItem Content="W2 - Weekly (16th of month)" Tag="W2"/>
+                                <ComboBoxItem Content="W3 - Weekly (23rd of month)" Tag="W3"/>
+                                <ComboBoxItem Content="ME - Month End Full Submission" Tag="ME"/>
+                                <ComboBoxItem Content="DC - Data Correction or Dispute" Tag="DC"/>
+                                <ComboBoxItem Content="AH - Adhoc Submission" Tag="AH"/>
+                                <ComboBoxItem Content="RR - Rejection Resubmission" Tag="RR"/>
+                            </ComboBox>
+
+                            <TextBlock Grid.Row="4" Text="Member ID" Style="{StaticResource LabelStyle}" Margin="0,0,0,4"/>
+                            <TextBox Grid.Row="5" Text="{Binding MemberUserId, Mode=OneWay}" IsReadOnly="True" Style="{StaticResource InputStyle}" Background="{StaticResource AppBackground}"/>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- Process File Button -->
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,24,0,24">
+                <Button Command="{Binding ProcessFileCommand}" Width="160" Height="42">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource PrimaryButtonStyle}">
+                            <Setter Property="Content" Value="Process File"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsProcessing}" Value="True">
+                                    <Setter Property="Content">
+                                        <Setter.Value>
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="↻" Margin="0,0,8,0" RenderTransformOrigin="0.5,0.5">
+                                                    <TextBlock.RenderTransform>
+                                                        <RotateTransform x:Name="SpinnerTransform" Angle="0" />
+                                                    </TextBlock.RenderTransform>
+                                                    <TextBlock.Triggers>
+                                                        <EventTrigger RoutedEvent="Loaded">
+                                                            <BeginStoryboard>
+                                                                <Storyboard>
+                                                                    <DoubleAnimation Storyboard.TargetProperty="(TextBlock.RenderTransform).(RotateTransform.Angle)"
+                                                                                     From="0" To="360" Duration="0:0:1" RepeatBehavior="Forever"/>
+                                                                </Storyboard>
+                                                            </BeginStoryboard>
+                                                        </EventTrigger>
+                                                    </TextBlock.Triggers>
+                                                </TextBlock>
+                                                <TextBlock Text="Processing..."/>
+                                            </StackPanel>
+                                        </Setter.Value>
+                                    </Setter>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+            </StackPanel>
+
+            <!-- Section 3: Progress Card -->
+            <Border Style="{StaticResource CardStyle}" Margin="0,0,0,24" Visibility="{Binding IsProcessing, Converter={StaticResource BoolToVis}}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    
+                    <TextBlock Grid.Row="0" Text="{Binding StatusMessage}" Foreground="{StaticResource TextPrimary}" Margin="0,0,0,8" HorizontalAlignment="Left"/>
+                    <TextBlock Grid.Row="0" Text="{Binding ProgressValue, StringFormat='{}{0}%'}" Foreground="{StaticResource TextSecondary}" FontWeight="SemiBold" HorizontalAlignment="Right"/>
+                    
+                    <Grid Grid.Row="1" x:Name="ProgressBarContainer">
+                        <Border Height="6" CornerRadius="3" Background="{StaticResource AppBackground}"/>
+                        <Border Height="6" CornerRadius="3" Background="{StaticResource PrimaryBlue}" HorizontalAlignment="Left">
+                            <Border.Width>
+                                <MultiBinding Converter="{StaticResource ProgressWidthConverter}">
+                                    <Binding Path="ProgressValue"/>
+                                    <Binding ElementName="ProgressBarContainer" Path="ActualWidth"/>
+                                </MultiBinding>
+                            </Border.Width>
+                        </Border>
+                    </Grid>
+                </Grid>
+            </Border>
+            
+            <Border Style="{StaticResource CardStyle}" Margin="0,0,0,24" Visibility="{Binding HasResult, Converter={StaticResource BoolToVis}}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    
+                    <TextBlock Grid.Row="0" Text="Processing complete" Foreground="{StaticResource TextPrimary}" Margin="0,0,0,8" HorizontalAlignment="Left"/>
+                    <TextBlock Grid.Row="0" Text="100%" Foreground="{StaticResource TextSecondary}" FontWeight="SemiBold" HorizontalAlignment="Right"/>
+                    
+                    <Grid Grid.Row="1" x:Name="ProgressBarContainerCompleted">
+                        <Border Height="6" CornerRadius="3" Background="{StaticResource AppBackground}"/>
+                        <Border Height="6" CornerRadius="3" Background="{StaticResource SuccessGreen}" HorizontalAlignment="Left" Width="{Binding ElementName=ProgressBarContainerCompleted, Path=ActualWidth}"/>
+                    </Grid>
+                </Grid>
+            </Border>
+
+            <!-- Section 4: Results Summary -->
+            <StackPanel Visibility="{Binding HasResult, Converter={StaticResource BoolToVis}}">
+                <UniformGrid Columns="4" Margin="0,0,0,24">
+                    <UniformGrid.Resources>
+                        <Style TargetType="Border" BasedOn="{StaticResource StatCardStyle}">
+                            <Setter Property="Margin" Value="0,0,16,0"/>
+                        </Style>
+                    </UniformGrid.Resources>
+
+                    <!-- Total -->
+                    <Border BorderThickness="4,1,1,1" BorderBrush="{StaticResource BorderLight}">
+                        <Border.Style>
+                            <Style TargetType="Border" BasedOn="{StaticResource StatCardStyle}">
+                                <Setter Property="Margin" Value="0,0,16,0"/>
+                                <Setter Property="BorderBrush" Value="{StaticResource PrimaryBlue}"/>
+                                <Setter Property="BorderThickness" Value="4,1,1,1"/>
+                            </Style>
+                        </Border.Style>
+                        <StackPanel>
+                            <TextBlock Text="{Binding TotalRows}" FontSize="28" FontWeight="SemiBold" Foreground="{StaticResource TextPrimary}"/>
+                            <TextBlock Text="Total Records" Foreground="{StaticResource TextSecondary}" FontSize="12"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Accepted -->
+                    <Border BorderThickness="4,1,1,1" BorderBrush="{StaticResource BorderLight}">
+                        <Border.Style>
+                            <Style TargetType="Border" BasedOn="{StaticResource StatCardStyle}">
+                                <Setter Property="Margin" Value="0,0,16,0"/>
+                                <Setter Property="BorderBrush" Value="{StaticResource SuccessGreen}"/>
+                                <Setter Property="BorderThickness" Value="4,1,1,1"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding RejectedRows}" Value="0">
+                                        <Setter Property="Background" Value="{StaticResource SuccessGreenLight}"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+                        <StackPanel>
+                            <TextBlock Text="{Binding AcceptedRows}" FontSize="28" FontWeight="SemiBold" Foreground="{StaticResource TextPrimary}"/>
+                            <TextBlock Text="Accepted" Foreground="{StaticResource TextSecondary}" FontSize="12"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Rejected -->
+                    <Border BorderThickness="4,1,1,1" BorderBrush="{StaticResource BorderLight}">
+                        <Border.Style>
+                            <Style TargetType="Border" BasedOn="{StaticResource StatCardStyle}">
+                                <Setter Property="Margin" Value="0,0,16,0"/>
+                                <Setter Property="BorderBrush" Value="{StaticResource ErrorRed}"/>
+                                <Setter Property="BorderThickness" Value="4,1,1,1"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding RejectedRows, Converter={StaticResource ZeroToVis}}" Value="Visible">
+                                        <Setter Property="Background" Value="{StaticResource ErrorRedLight}"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+                        <StackPanel>
+                            <TextBlock Text="{Binding RejectedRows}" FontSize="28" FontWeight="SemiBold" Foreground="{StaticResource TextPrimary}"/>
+                            <TextBlock Text="Rejected" Foreground="{StaticResource TextSecondary}" FontSize="12"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Warnings -->
+                    <Border BorderThickness="4,1,1,1" BorderBrush="{StaticResource BorderLight}">
+                        <Border.Style>
+                            <Style TargetType="Border" BasedOn="{StaticResource StatCardStyle}">
+                                <Setter Property="Margin" Value="0,0,0,0"/>
+                                <Setter Property="BorderBrush" Value="{StaticResource WarningAmber}"/>
+                                <Setter Property="BorderThickness" Value="4,1,1,1"/>
+                            </Style>
+                        </Border.Style>
+                        <StackPanel>
+                            <TextBlock Text="{Binding WarningCount}" FontSize="28" FontWeight="SemiBold" Foreground="{StaticResource TextPrimary}"/>
+                            <TextBlock Text="Warnings" Foreground="{StaticResource TextSecondary}" FontSize="12"/>
+                        </StackPanel>
+                    </Border>
+                </UniformGrid>
+
+                <!-- Action Buttons -->
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                    <Button Content="View Details" Command="{Binding NavigateToValidationResultsCommand}" Style="{StaticResource SecondaryButtonStyle}" Margin="0,0,12,0"/>
+                    <Button Content="Open Output File" Command="{Binding OpenOutputFileCommand}" Style="{StaticResource GhostButtonStyle}" Visibility="{Binding GeneratedFilePath, Converter={StaticResource NullToVis}}"/>
+                </StackPanel>
+            </StackPanel>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

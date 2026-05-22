@@ -1,0 +1,79 @@
+<UserControl x:Class="TudfConverter.WpfUI.Views.HistoryView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="700" d:DesignWidth="900"
+             Background="{StaticResource AppBackground}">
+    <Grid Margin="32">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <DockPanel Grid.Row="0" Margin="0,0,0,24">
+            <TextBlock Text="Processing History" Style="{StaticResource H2}" DockPanel.Dock="Left" VerticalAlignment="Center"/>
+            <Button Content="Clear History" Command="{Binding ClearHistoryCommand}" Style="{StaticResource GhostButtonStyle}" Foreground="{StaticResource ErrorRed}" HorizontalAlignment="Right" DockPanel.Dock="Right"/>
+        </DockPanel>
+
+        <!-- DataGrid Area -->
+        <Grid Grid.Row="1">
+            <DataGrid ItemsSource="{Binding ProcessingHistory}" AutoGenerateColumns="False" Style="{StaticResource DataGridStyle}" Visibility="{Binding ProcessingHistory.Count, Converter={StaticResource ZeroToVis}}">
+                <DataGrid.InputBindings>
+                    <MouseBinding Gesture="LeftDoubleClick" Command="{Binding OpenHistoryOutputFileCommand}" CommandParameter="{Binding SelectedItem, RelativeSource={RelativeSource AncestorType=DataGrid}}"/>
+                </DataGrid.InputBindings>
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Date/Time" Binding="{Binding ProcessedAt, StringFormat='{}{0:yyyy-MM-dd HH:mm:ss}'}" Width="150">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                <Setter Property="Margin" Value="12,0,0,0"/>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn Header="Input File" Binding="{Binding InputFileName}" Width="*">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn Header="Total" Binding="{Binding TotalRows}" Width="100">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn Header="Accepted" Binding="{Binding AcceptedRows}" Width="100">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Foreground" Value="{StaticResource SuccessGreen}"/>
+                                <Setter Property="FontWeight" Value="SemiBold"/>
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn Header="Rejected" Binding="{Binding RejectedRows}" Width="100">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Foreground" Value="{StaticResource ErrorRed}"/>
+                                <Setter Property="FontWeight" Value="SemiBold"/>
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+
+            <!-- Empty State -->
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="{Binding ProcessingHistory.Count, Converter={StaticResource InverseZeroToVis}}">
+                <TextBlock Text="📅" FontSize="48" Foreground="{StaticResource TextMuted}" HorizontalAlignment="Center" Margin="0,0,0,16"/>
+                <TextBlock Text="No processing history yet" FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource TextSecondary}" HorizontalAlignment="Center" Margin="0,0,0,8"/>
+                <TextBlock Text="Your previous TUDF generations will appear here." Foreground="{StaticResource TextMuted}" HorizontalAlignment="Center"/>
+            </StackPanel>
+        </Grid>
+
+    </Grid>
+</UserControl>

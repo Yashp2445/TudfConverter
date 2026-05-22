@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="TudfConverter.Application/TudfConverter.Application.csproj" />
+  <Project Path="TudfConverter.Domain/TudfConverter.Domain.csproj" />
+  <Project Path="TudfConverter.Infrastructure/TudfConverter.Infrastructure.csproj" />
+  <Project Path="TudfConverter.WpfUI/TudfConverter.WpfUI.csproj" />
+</Solution>
