@@ -19,3 +19,4 @@ public static class AccountTypes
         70, 71
     };
 }
+
